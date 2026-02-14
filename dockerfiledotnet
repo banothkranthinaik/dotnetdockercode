@@ -1,0 +1,11 @@
+FORM mcr.microsoft.com/dotnet/sdk:9.0-noble AS build
+ADD . /app
+WORKDIR /app
+RUN dotnet publish -c Release src/Presentation/Nop.Web -o prod
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-noble AS runtime
+LABEL project="dotnetproject"
+LABEL author "devopsteam"
+COPY --from=build /app/prod/Nop.Web.dll Nop.Web.dll
+EXPOSE 5000
+CMD ["dotnet", "Nop.Web.dll", "urls", "http://0.0.0.0:5000"]
